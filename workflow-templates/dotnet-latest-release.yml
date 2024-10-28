@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      # Path to the release artifacts
+      ARTIFACTS_PATH: artifacts/Release/net8.0-windows/win-x64/publish
+      # Name of tag+release in Github
+      RELEASE_NAME: latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Publish
+      run: dotnet publish -r win-x64 -c Release -p:PublishSingleFile=true --no-self-contained
+
+    - name: Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Release
+        path: ${{ env.ARTIFACTS_PATH }}
+    
+    - name: Release Cleanup
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release delete ${{ env.RELEASE_NAME }} --cleanup-tag --yes --repo $GITHUB_REPOSITORY || true
+
+    - name: Release
+      if: ${{ github.event_name == 'push' }}
+      uses: ncipollo/release-action@v1
+      with:
+        commit: main
+        tag: ${{ env.RELEASE_NAME }}
+        artifacts: "${{ env.ARTIFACTS_PATH }}/*"
+        allowUpdates: true
+        makeLatest: true
+        

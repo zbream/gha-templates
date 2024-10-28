@@ -12,9 +12,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      # Path to the release dist
+      DIST_PATH: dist
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Node
       uses: actions/setup-node@v3
@@ -30,14 +33,14 @@ jobs:
       run: npm run ci
 
     - name: Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist
-        path: dist
+        path: ${{ DIST_PATH }}
 
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       with:
-        folder: dist
+        folder: ${{ DIST_PATH }}
         single-commit: true
