@@ -12,6 +12,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       # Path to the release dist
       DIST_PATH: dist
@@ -36,11 +38,11 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dist
-        path: ${{ DIST_PATH }}
+        path: ${{ env.DIST_PATH }}
 
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       with:
-        folder: ${{ DIST_PATH }}
+        folder: ${{ env.DIST_PATH }}
         single-commit: true
