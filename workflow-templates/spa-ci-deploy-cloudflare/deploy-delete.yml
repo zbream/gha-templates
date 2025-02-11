@@ -4,7 +4,7 @@
 #
 # See `ci.yml` for setup.
 
-name: Deployment Delete
+name: Deploy Delete
 
 on:
   pull_request:
@@ -14,8 +14,8 @@ on:
       - main
 
 jobs:
-  deployment-delete:
-    name: Deployment Delete
+  deploy-delete:
+    name: Deploy Delete
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -23,7 +23,7 @@ jobs:
       deployments: write
       pull-requests: write
     steps:
-      - name: Deployment Delete
+      - name: Deploy Delete
         uses: andykenward/github-actions-cloudflare-pages/delete@v2.5.0
         with:
           cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
