@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+# Delete PR Preview deployments from Cloudflare and GitHub, on PR close.
+#
+# See `ci.yml` for setup.
+
+name: Deployment Delete
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  deployment-delete:
+    name: Deployment Delete
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      deployments: write
+      pull-requests: write
+    steps:
+      - name: Deployment Delete
+        uses: andykenward/github-actions-cloudflare-pages/delete@v2.5.0
+        with:
+          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

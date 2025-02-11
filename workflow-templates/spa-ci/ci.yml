@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+# Build a SPA, uploading artifacts.
+#
+# Set the following vars:
+#  - env.DIST_PATH below
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env:
+      # Path to dist directory
+      DIST_PATH: dist
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          # cache: yarn
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run ci
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ${{ env.DIST_PATH }}
